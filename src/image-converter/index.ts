@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import * as webPConverter from "webp-converter";
-import { uploadImage } from "../dropbox";
+import { uploadFile } from "../digital-ocean";
 import { sendSticker } from "../messenger";
 
 export type WhatsappMessage = {
@@ -64,7 +64,7 @@ export async function convertImage(path: string, id: string): Promise<string> {
     );
     result
       .then(() => {
-        uploadImage(`${id}.webp`)
+        uploadFile(`${id}.webp`)
           .then((imageURL) => resolve(imageURL))
           .catch((error) => reject(error));
       })
