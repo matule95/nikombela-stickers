@@ -29,7 +29,7 @@ export async function sendSticker(
     await axios(config)
       .then(() => {
         console.log("Sticker sent successfully");
-        resolve();
+        return resolve();
       })
       .catch(() => reject());
   });

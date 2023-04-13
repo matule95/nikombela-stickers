@@ -48,7 +48,9 @@ export async function downloadImage(message: WhatsappMessage): Promise<void> {
       .once("close", () => {
         convertImage(filePath, fileIdentifier)
           .then((imageUrl) =>
-            sendSticker(imageUrl, sanitizedPhoneNumber).then(() => resolve)
+            sendSticker(imageUrl, sanitizedPhoneNumber).then(() => {
+              return resolve();
+            })
           )
           .catch(() => console.log("error"));
       });
@@ -60,7 +62,7 @@ export async function convertImage(path: string, id: string): Promise<string> {
     const result = webPConverter.cwebp(
       path,
       `converted-images/${id}.webp`,
-      "-size 30000"
+      "-mt -m 3 -q 30"
     );
     result
       .then(() => {

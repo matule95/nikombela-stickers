@@ -5,9 +5,15 @@ export default function createRoutes(app: Express): Router {
   app.route("/demo").post(({ body }: Request, res: Response) => {
     const requestBody: WhatsappMessage = body;
     if (requestBody && requestBody.data.media) {
+      console.time("Execution Time");
       downloadImage(requestBody)
-        .then(() => console.log("successfully downloaded image"))
-        .catch(() => console.log("error here"));
+        .then(() => {
+          console.timeEnd("Execution Time");
+        })
+        .catch(() => {
+          console.log("error here");
+          console.timeEnd("Execution Time");
+        });
     }
     res.send("Demo endpoint reacheddd");
   });
