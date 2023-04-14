@@ -16,8 +16,8 @@ const s3Client = new S3Client({
   },
 });
 
-export async function uploadFile(fileName: string) {
-  const filePath = `converted-images/${fileName}`;
+export async function uploadFile(fileName: string, fileType: string) {
+  const filePath = `converted-${fileType}s/${fileName}`;
   const fileData = fs.readFileSync(filePath);
   const params = {
     Bucket: "nikombela-stickers", // The path to the directory you want to upload the object to, starting with your Space name.

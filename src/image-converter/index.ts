@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import * as webPConverter from "webp-converter";
 import { uploadFile } from "../digital-ocean";
 import { sendSticker } from "../messenger";
+import { videoConvert } from "./video-converter";
 
 export type WhatsappMessage = {
   event_type: string;
@@ -28,7 +29,10 @@ type WhatsappMessageData = {
   isForwarded: boolean;
   isMentioned: boolean;
 };
-export async function downloadImage(message: WhatsappMessage): Promise<void> {
+export async function downloadAsset(
+  message: WhatsappMessage,
+  fileType: "video" | "image"
+): Promise<void> {
   const {
     data: { media: url, from },
   } = message;
@@ -38,15 +42,16 @@ export async function downloadImage(message: WhatsappMessage): Promise<void> {
     method: "GET",
     responseType: "stream",
   });
-  console.log("Downloading Image");
+  console.log(`Downloading ${fileType}`);
   return new Promise<void>((resolve, reject) => {
     const fileIdentifier = uuidv4().split("-").join("");
-    const filePath = `downloads/${fileIdentifier}.jpeg`;
+    const fileExtension = fileType === "image" ? ".png" : ".mp4";
+    const filePath = `downloaded-${fileType}s/${fileIdentifier}${fileExtension}`;
     response.data
       .pipe(fs.createWriteStream(filePath))
       .on("error", reject)
       .once("close", () => {
-        convertImage(filePath, fileIdentifier)
+        convertObject(filePath, fileIdentifier, fileType)
           .then((imageUrl) =>
             sendSticker(imageUrl, sanitizedPhoneNumber).then(() => {
               return resolve();
@@ -56,23 +61,36 @@ export async function downloadImage(message: WhatsappMessage): Promise<void> {
       });
   });
 }
-export async function convertImage(path: string, id: string): Promise<string> {
+export async function convertObject(
+  path: string,
+  id: string,
+  fileType: "video" | "image"
+): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    console.log("Converting image");
-    const result = webPConverter.cwebp(
-      path,
-      `converted-images/${id}.webp`,
-      "-mt -m 3 -q 30"
-    );
-    result
-      .then(() => {
-        uploadFile(`${id}.webp`)
+    if (fileType === "image") {
+      console.log("Converting image");
+      const result = webPConverter.cwebp(
+        path,
+        `converted-images/${id}.webp`,
+        "-mt -m 3 -q 30"
+      );
+      result
+        .then(() => {
+          uploadFile(`${id}.webp`, fileType)
+            .then((imageURL) => resolve(imageURL))
+            .catch((error) => reject(error));
+        })
+        .catch((reason: any) => {
+          console.log(reason);
+          reject(reason);
+        });
+    } else if (fileType === "video") {
+      console.log("Converting video");
+      videoConvert(id).then((fileName) => {
+        uploadFile(`${fileName}`, fileType)
           .then((imageURL) => resolve(imageURL))
-          .catch((error) => reject(error));
-      })
-      .catch((reason: any) => {
-        console.log(reason);
-        reject(reason);
+          .catch((error) => console.log("Error uploading video", error));
       });
+    }
   });
 }
