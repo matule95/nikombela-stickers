@@ -10,14 +10,12 @@ export default function createRoutes(app: Express): Router {
     ) {
       if (requestBody.data && requestBody.data.media) {
         const fileType = requestBody.data.type;
-        console.time("Execution Time");
         downloadAsset(requestBody, fileType)
           .then(() => {
-            console.timeEnd("Execution Time");
+            console.log("Transaction Success");
           })
           .catch(() => {
             console.log("error here");
-            console.timeEnd("Execution Time");
           });
       }
     }
