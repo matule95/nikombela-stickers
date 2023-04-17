@@ -23,8 +23,10 @@ export function videoConvert(fileName: string): Promise<string> {
       "10",
       "-loop",
       "0",
+      "-vf",
+      "scale='min(512,iw)':min'(512,ih)':force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=black,format=rgb24",
       "-fs",
-      "485000",
+      "493000",
       `${fileName}.webp`
     );
     await fs.promises
