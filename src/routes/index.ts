@@ -14,8 +14,12 @@ export default function createRoutes(app: Express): Router {
         downloadAsset(requestBody, fileType)
           .then(() => {
             console.log("Transaction Success");
-            clearChat(requestBody.data.from).then(() =>
-              console.log("Chat cleared")
+            setTimeout(
+              () =>
+                clearChat(requestBody.data.from).then(() =>
+                  console.log("Chat cleared")
+                ),
+              10000
             );
           })
           .catch(() => {
