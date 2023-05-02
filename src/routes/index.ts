@@ -1,8 +1,9 @@
 import { Request, Response, Router, Express } from "express";
 import { downloadAsset, WhatsappMessage } from "../image-converter";
+import { clearChat } from "../cleanUp";
 export default function createRoutes(app: Express): Router {
   const router = Router();
-  app.route("/demo").post(({ body }: Request, res: Response) => {
+  app.route("/createSticker").post(({ body }: Request, res: Response) => {
     const requestBody: WhatsappMessage = body;
     if (
       requestBody.data.type === "video" ||
@@ -13,6 +14,9 @@ export default function createRoutes(app: Express): Router {
         downloadAsset(requestBody, fileType)
           .then(() => {
             console.log("Transaction Success");
+            clearChat(requestBody.data.from).then(() =>
+              console.log("Chat cleared")
+            );
           })
           .catch(() => {
             console.log("error here");

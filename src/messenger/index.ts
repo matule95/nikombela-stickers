@@ -1,8 +1,8 @@
 import axios from "axios";
 import qs from "qs";
 const ultraMSGConfig = {
-  instance_id: "instance43057",
-  token: "5g7fn00gtr5qkkid",
+  instance_id: process.env.INSTANCE_ID,
+  token: process.env.INSTANCE_TOKEN,
 };
 export async function sendSticker(
   url: string,

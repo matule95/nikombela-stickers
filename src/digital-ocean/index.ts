@@ -1,8 +1,4 @@
-import {
-  PutObjectCommand,
-  S3Client,
-  PutObjectRequest,
-} from "@aws-sdk/client-s3";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import fs from "fs";
 
 // Step 2: The s3Client function validates your request and directs it to your Space's specified endpoint using the AWS SDK.
@@ -11,8 +7,8 @@ const s3Client = new S3Client({
   forcePathStyle: false,
   region: "fra1", // Must be "us-east-1" when creating new Spaces. Otherwise, use the region in your endpoint (e.g. nyc3).
   credentials: {
-    accessKeyId: "DO00LGVG4T7RCNB3MTL2", // Access key pair. You can create access key pairs using the control panel or API.
-    secretAccessKey: "aJoB0LSzq120h9yKR6hG99b2DvFFAaLn1l5GnJZ3M7s", // Secret access key defined through an environment variable.
+    accessKeyId: `${process.env.DO_ACCESSKEYID}`, // Access key pair. You can create access key pairs using the control panel or API.
+    secretAccessKey: `${process.env.DO_SECRETACCESSKEY}`, // Secret access key defined through an environment variable.
   },
 });
 
@@ -28,13 +24,11 @@ export async function uploadFile(fileName: string, fileType: string) {
   return new Promise<string>((resolve, reject) => {
     s3Client
       .send(new PutObjectCommand(params))
-      .then((response) => {
+      .then(() => {
         console.log(
           "Successfully uploaded object: " + params.Bucket + "/" + params.Key
         );
-        resolve(
-          `https://nikombela-stickers.fra1.cdn.digitaloceanspaces.com/${fileName}`
-        );
+        resolve(`${process.env.DO_SPACE_URL}${fileName}`);
       })
       .catch((error) => {
         reject(error);

@@ -2,6 +2,8 @@ import express from "express";
 import bodyParser from "body-parser";
 import createRoutes from "./routes";
 import { createFFmpeg } from "@ffmpeg/ffmpeg";
+import * as dotenv from "dotenv";
+dotenv.config();
 const app = express();
 const port = 3000;
 app.use(bodyParser.urlencoded({ extended: false }));
