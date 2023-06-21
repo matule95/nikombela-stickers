@@ -17,7 +17,7 @@ client.on("ready", () => {
   console.log("[BOOT] Client is ready!");
 });
 client.on("message", async (message) => {
-  if (message.from === "258822487710@c.us" && message.hasMedia === true) {
+  if (message.hasMedia === true) {
     const media = await message.downloadMedia();
     if (media) {
       await client
