@@ -8,3 +8,5 @@ converted-videos/
 downloads/
 downloaded-images/
 downloaded-videos/
+.wwebjs_auth/
+.wwebjs_cache/
